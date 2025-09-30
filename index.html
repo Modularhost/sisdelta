@@ -4,73 +4,16 @@
   <meta charset="UTF-8">
   <title>Iniciar Sesión</title>
   <style>
-    /* Reset básico */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #f0f2f5;
-    }
-
-    .login-container {
-      background: #fff;
-      padding: 40px 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      width: 350px;
-      text-align: center;
-    }
-
-    h2 {
-      margin-bottom: 30px;
-      color: #333;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px 15px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 15px;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    #mensaje {
-      margin-top: 15px;
-      font-size: 14px;
-    }
-
-    @media (max-width: 400px) {
-      .login-container {
-        width: 90%;
-        padding: 30px 20px;
-      }
-    }
+    /* Estilos iguales que antes */
+    * { box-sizing: border-box; margin:0; padding:0; font-family:Arial, sans-serif;}
+    body { height:100vh; display:flex; justify-content:center; align-items:center; background:#f0f2f5; }
+    .login-container { background:#fff; padding:40px 30px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.1); width:350px; text-align:center; }
+    h2 { margin-bottom:30px; color:#333; }
+    input { width:100%; padding:12px 15px; margin:10px 0; border:1px solid #ccc; border-radius:8px; font-size:14px; }
+    button { width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:16px; cursor:pointer; margin-top:15px; transition:0.3s; }
+    button:hover { background:#45a049; }
+    #mensaje { margin-top:15px; font-size:14px; }
+    @media(max-width:400px){.login-container{width:90%; padding:30px 20px;}}
   </style>
 </head>
 <body>
@@ -88,6 +31,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAFwBdwIY-mbZ3j1DAHwtfGY4olBVZLNgU",
@@ -101,6 +45,7 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
     const form = document.getElementById("loginForm");
     const mensaje = document.getElementById("mensaje");
@@ -112,14 +57,30 @@
       const password = document.getElementById("password").value;
 
       try {
+        // 1️⃣ Iniciar sesión en Authentication
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
+        // 2️⃣ Obtener datos del usuario en Firestore
+        const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+
+        if (!userDoc.exists()) {
+          mensaje.style.color = "red";
+          mensaje.textContent = "Usuario no encontrado en la base de datos.";
+          return;
+        }
+
+        const data = userDoc.data();
+        const modulo = data.modulo.toLowerCase();
+        const categoria = data.categoria.toLowerCase();
+
+        // 3️⃣ Generar ruta y redirigir
+        const ruta = `${modulo}/${categoria}/menu.html`;
         mensaje.style.color = "green";
-        mensaje.textContent = "¡Inicio de sesión exitoso! ✅";
+        mensaje.textContent = "¡Inicio de sesión exitoso! Redirigiendo... ✅";
 
         setTimeout(() => {
-          window.location.href = "dashboard.html"; 
+          window.location.href = ruta;
         }, 1000);
 
       } catch (error) {
