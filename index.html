@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Iniciar Sesión</title>
+</head>
+<body>
+  <h2>Iniciar Sesión</h2>
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Correo electrónico" required><br><br>
+    <input type="password" id="password" placeholder="Contraseña" required><br><br>
+    <button type="submit">Iniciar Sesión</button>
+  </form>
+
+  <p id="mensaje" style="color:red;"></p>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAFwBdwIY-mbZ3j1DAHwtfGY4olBVZLNgU",
+      authDomain: "sisdelta.firebaseapp.com",
+      projectId: "sisdelta",
+      storageBucket: "sisdelta.firebasestorage.app",
+      messagingSenderId: "919290668637",
+      appId: "1:919290668637:web:8524a2f0ea0517112acfb4",
+      measurementId: "G-F608E1EX28"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const form = document.getElementById("loginForm");
+    const mensaje = document.getElementById("mensaje");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        // Iniciar sesión con Firebase Authentication
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        mensaje.style.color = "green";
+        mensaje.textContent = "¡Inicio de sesión exitoso! ✅";
+
+        // Redirigir a dashboard o página principal
+        setTimeout(() => {
+          window.location.href = "dashboard.html"; // cambia a tu página deseada
+        }, 1000);
+
+      } catch (error) {
+        console.error("Error en inicio de sesión:", error);
+        mensaje.style.color = "red";
+        mensaje.textContent = "Error: " + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
