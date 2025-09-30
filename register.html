@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Usuario</title>
+</head>
+<body>
+  <h2>Registro de Usuario</h2>
+  <form id="registerForm">
+    <input type="text" id="nombre" placeholder="Nombre completo" required><br><br>
+    <input type="text" id="usuario" placeholder="Usuario" required><br><br>
+    
+    <select id="sexo" required>
+      <option value="">Seleccione sexo</option>
+      <option value="Masculino">Masculino</option>
+      <option value="Femenino">Femenino</option>
+      <option value="Otro">Otro</option>
+    </select><br><br>
+
+    <input type="email" id="email" placeholder="Correo electrónico" required><br><br>
+    <input type="password" id="password" placeholder="Contraseña" required><br><br>
+    <input type="password" id="repassword" placeholder="Repetir contraseña" required><br><br>
+
+    <input type="text" id="modulo" placeholder="Módulo" required><br><br>
+    <input type="text" id="categoria" placeholder="Categoría" required><br><br>
+
+    <button type="submit">Registrar</button>
+  </form>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAFwBdwIY-mbZ3j1DAHwtfGY4olBVZLNgU",
+      authDomain: "sisdelta.firebaseapp.com",
+      projectId: "sisdelta",
+      storageBucket: "sisdelta.firebasestorage.app",
+      messagingSenderId: "919290668637",
+      appId: "1:919290668637:web:8524a2f0ea0517112acfb4",
+      measurementId: "G-F608E1EX28"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("registerForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nombre = document.getElementById("nombre").value;
+      const usuario = document.getElementById("usuario").value;
+      const sexo = document.getElementById("sexo").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const repassword = document.getElementById("repassword").value;
+      const modulo = document.getElementById("modulo").value;
+      const categoria = document.getElementById("categoria").value;
+
+      if (password !== repassword) {
+        alert("Las contraseñas no coinciden");
+        return;
+      }
+
+      try {
+        // Crear usuario en Authentication
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Guardar datos adicionales en Firestore
+        await setDoc(doc(db, "usuarios", user.uid), {
+          nombre: nombre,
+          usuario: usuario,
+          sexo: sexo,
+          email: email,
+          modulo: modulo,
+          categoria: categoria,
+          uid: user.uid
+        });
+
+        alert("Usuario registrado correctamente ✅");
+        form.reset();
+      } catch (error) {
+        console.error("Error en el registro:", error);
+        alert("Error: " + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
