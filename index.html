@@ -3,23 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <title>Iniciar Sesión</title>
+  <style>
+    /* Reset básico */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f0f2f5;
+    }
+
+    .login-container {
+      background: #fff;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      width: 350px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #mensaje {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 400px) {
+      .login-container {
+        width: 90%;
+        padding: 30px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h2>Iniciar Sesión</h2>
-  <form id="loginForm">
-    <input type="email" id="email" placeholder="Correo electrónico" required><br><br>
-    <input type="password" id="password" placeholder="Contraseña" required><br><br>
-    <button type="submit">Iniciar Sesión</button>
-  </form>
-
-  <p id="mensaje" style="color:red;"></p>
+  <div class="login-container">
+    <h2>Iniciar Sesión</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Correo electrónico" required>
+      <input type="password" id="password" placeholder="Contraseña" required>
+      <button type="submit">Iniciar Sesión</button>
+    </form>
+    <p id="mensaje"></p>
+  </div>
 
   <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
-    // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAFwBdwIY-mbZ3j1DAHwtfGY4olBVZLNgU",
       authDomain: "sisdelta.firebaseapp.com",
@@ -30,7 +99,6 @@
       measurementId: "G-F608E1EX28"
     };
 
-    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
@@ -44,16 +112,14 @@
       const password = document.getElementById("password").value;
 
       try {
-        // Iniciar sesión con Firebase Authentication
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
         mensaje.style.color = "green";
         mensaje.textContent = "¡Inicio de sesión exitoso! ✅";
 
-        // Redirigir a dashboard o página principal
         setTimeout(() => {
-          window.location.href = "dashboard.html"; // cambia a tu página deseada
+          window.location.href = "dashboard.html"; 
         }, 1000);
 
       } catch (error) {
